@@ -1,16 +1,23 @@
 package main
 
 import (
-    "testing"
+	"testing"
 )
 
 func TestDay1(t *testing.T) {
-    got := Day1_1("input-files/day1-test1.txt")
-    if got != 514579 {
-        t.Errorf("Day1_1() = %d; want 514579", got)
-    }
-    got = Day1_2("input-files/day1-test1.txt")
-    if got != 241861950 {
-        t.Errorf("Day1_2() = %d; want 241861950", got)
-    }
+	got, want := Day1_1("input-files/day1-test1.txt"), 514579
+	if got != want {
+		t.Errorf("Day1_1() = %d; want %s", got, want)
+	}
+	got, want = Day1_1("input-files/day1-test1.txt"), 241861950
+	if got != want {
+		t.Errorf("Day1_2() = %d; want %s", got, want)
+	}
+}
+
+func TestDay2(t *testing.T) {
+	got, want := Day2_1("input-files/day2-test1.txt"), 2
+	if got != want {
+		t.Error("Day2_1() =%d; want %s", got, want)
+	}
 }
