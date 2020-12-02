@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"reflect"
+	"regexp"
 	"strconv"
+	"strings"
 )
 
 func main() {
 	m := map[string]func(string) int{
 		"day1_1": Day1_1,
 		"day1_2": Day1_2,
+		"day2_1": Day2_1,
+		"day2_2": Day2_2,
 	}
 
 	var day = &cobra.Command{
@@ -56,11 +59,35 @@ func Day1_2(filename string) int {
 
 // DAY 2 //////////////////////////////////////////////////////////////////////
 func Day2_1(filename string) int {
-	return 0
+  r := regexp.MustCompile(`(\d*)-(\d*) ([a-z]): ([a-z]*)`)
+	passwdCount := 0
+	for line := range inputCh(filename) {
+		parsed := r.FindStringSubmatch(line)
+		min, _ := strconv.Atoi(parsed[1])
+		max, _ := strconv.Atoi(parsed[2])
+		char, passwd := parsed[3], parsed[4]
+		charCount := strings.Count(passwd, char)
+		if min <= charCount && charCount <= max {
+			passwdCount++
+		}
+	}
+	return passwdCount
 }
 
 func Day2_2(filename string) int {
-	return 0
+	r := regexp.MustCompile(`(\d*)-(\d*) ([a-z]): ([a-z]*)`)
+	passwdCount := 0
+	for line := range inputCh(filename) {
+		parsed := r.FindStringSubmatch(line)
+		pos1, _ := strconv.Atoi(parsed[1])
+		pos2, _ := strconv.Atoi(parsed[2])
+		char, passwd := parsed[3], parsed[4]
+		pos1Char, pos2Char := string(passwd[pos1-1]), string(passwd[pos2-1])
+		if (pos1Char==char || pos2Char==char) && pos1Char!=pos2Char {
+			passwdCount++
+		}
+	}
+	return passwdCount
 }
 
 // TOOLS //////////////////////////////////////////////////////////////////////
@@ -111,14 +138,3 @@ func inputChInt(filename string) (ch chan int) {
 	return ch
 }
 
-func ChToSl(ch interface{}) interface{} {
-	chv := reflect.ValueOf(ch)
-	slv := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(ch).Elem()), 0, 0)
-	for {
-		v, ok := chv.Recv()
-		if !ok {
-			return slv.Interface()
-		}
-	slv = reflect.Append(slv, v)
-	}
-}
