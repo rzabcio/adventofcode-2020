@@ -16,7 +16,7 @@ func main() {
 	}
 
 	var day = &cobra.Command{
-		Use:  "day [day_no] [test_no] [filename]",
+		Use:	"day [day_no] [test_no] [filename]",
 		Args: cobra.MinimumNArgs(3),
 		Run: func(cmd *cobra.Command, args []string) {
 			f := m["day"+args[0]+"_"+args[1]]
@@ -54,13 +54,22 @@ func Day1_2(filename string) int {
 	return 0
 }
 
+// DAY 2 //////////////////////////////////////////////////////////////////////
+func Day2_1(filename string) int {
+	return 0
+}
+
+func Day2_2(filename string) int {
+	return 0
+}
+
 // TOOLS //////////////////////////////////////////////////////////////////////
 func inputSl(filename string) []string {
 	sl := make([]string, 0)
 	for s := range inputCh(filename) {
 		sl = append(sl, s)
 	}
-  return sl
+	return sl
 }
 
 func inputSlInt(filename string) []int {
@@ -68,7 +77,7 @@ func inputSlInt(filename string) []int {
 	for s := range inputChInt(filename) {
 		sl = append(sl, s)
 	}
-  return sl
+	return sl
 }
 
 func inputCh(filename string) (ch chan string) {
@@ -103,13 +112,13 @@ func inputChInt(filename string) (ch chan int) {
 }
 
 func ChToSl(ch interface{}) interface{} {
-    chv := reflect.ValueOf(ch)
-    slv := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(ch).Elem()), 0, 0)
-    for {
-        v, ok := chv.Recv()
-        if !ok {
-            return slv.Interface()
-        }
-        slv = reflect.Append(slv, v)
-    }
+	chv := reflect.ValueOf(ch)
+	slv := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(ch).Elem()), 0, 0)
+	for {
+		v, ok := chv.Recv()
+		if !ok {
+			return slv.Interface()
+		}
+	slv = reflect.Append(slv, v)
+	}
 }
