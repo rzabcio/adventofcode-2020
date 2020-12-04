@@ -36,3 +36,22 @@ func TestDay3(t *testing.T) {
 		t.Errorf("Day3_2() = %d; want %d", got, want)
 	}
 }
+
+func TestDay4(t *testing.T) {
+	got, want := Day4_1("input-files/day4-test1.txt"), 2
+	if got != want {
+		t.Errorf("Day4_1(test1) = %d; want %d", got, want)
+	}
+	got, want = Day4_2("input-files/day4-test1.txt"), 2
+	if got != want {
+		t.Errorf("Day4_2(test1) = %d; want %d", got, want)
+	}
+	got, want = Day4_2("input-files/day4-test-valids.txt"), 4
+	if got != want {
+		t.Errorf("Day4_2(valids) = %d; want %d", got, want)
+	}
+	got, want = Day4_2("input-files/day4-test-invalids.txt"), 0
+	if got != want {
+		t.Errorf("Day4_2(invalids) = %d; want %d", got, want)
+	}
+}
