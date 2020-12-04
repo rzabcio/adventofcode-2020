@@ -216,7 +216,7 @@ func parsePassportLine(p map[string]string, line string) {
 }
 
 func validatePassport(p map[string]string, validateFields bool) bool {
-	//fmt.Println("--- passport: ", p)	
+	//fmt.Println("--- passport: ", p)
 	_, hasCid := p["cid"]
 	if len(p) < 8 && (len(p)!=7 || hasCid) {
 		//fmt.Println("    NOT OK: fields")
