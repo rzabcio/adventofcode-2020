@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -17,6 +18,7 @@ func main() {
 		"day2_1": Day2_1, "day2_2": Day2_2,
 		"day3_1": Day3_1, "day3_2": Day3_2,
 		"day4_1": Day4_1, "day4_2": Day4_2,
+		"day5_1": Day5_1, "day5_2": Day5_2,
 	}
 
 	var day = &cobra.Command{
@@ -206,7 +208,6 @@ func parsePassports(filename string) []map[string]string {
 	passports = append(passports, p)
 	return passports
 }
-
 func parsePassportLine(p map[string]string, line string) {
 	for _, entry := range strings.Split(line, " ") {
 		split := strings.Split(entry, ":")
@@ -214,7 +215,6 @@ func parsePassportLine(p map[string]string, line string) {
 		p[key] = val
 	}
 }
-
 func validatePassport(p map[string]string, validateFields bool) bool {
 	//fmt.Println("--- passport: ", p)
 	_, hasCid := p["cid"]
@@ -239,7 +239,6 @@ func validatePassport(p map[string]string, validateFields bool) bool {
 	}
 	return true
 }
-
 var v_regs = map[string]*regexp.Regexp {
 	"byr": regexp.MustCompile(`^\d{4}$`),
 	"iyr": regexp.MustCompile(`^\d{4}$`),
@@ -270,4 +269,38 @@ var v_funcs = map[string]func(string) bool{
 					}
 					return 150<=height && height<=193
 				},
+}
+
+
+// DAY 5 //////////////////////////////////////////////////////////////////////
+func Day5_1(filename string) int {
+	maxSeatId := 0
+	for _, seatId := range parsePlaneSeats(filename) {
+		if seatId > maxSeatId {
+			maxSeatId = seatId
+		}
+	}
+	return maxSeatId
+}
+
+func Day5_2(filename string) int {
+	seatIds := parsePlaneSeats(filename)
+	sort.Ints(seatIds)
+	for seatId := seatIds[0]; seatId<seatIds[len(seatIds)-1]+1; seatId++ {
+		if seatId+seatIds[0] != seatIds[seatId] {
+			return seatId+seatIds[0]
+		}
+	}
+	return 0
+}
+func parsePlaneSeats(filename string) []int {
+	seatIds := make([]int, 0)
+	for seat := range inputCh(filename) {
+		seatB := strings.ReplaceAll(strings.ReplaceAll(seat, "F", "0"), "B", "1")
+		seatB = strings.ReplaceAll(strings.ReplaceAll(seatB, "L", "0"), "R", "1")
+		seatId, _ := strconv.ParseInt(seatB, 2, 0)
+		//fmt.Printf("    %s => %s => %d\n", seat, seatB, seatId)
+		seatIds = append(seatIds, int(seatId))
+	}
+	return seatIds
 }
