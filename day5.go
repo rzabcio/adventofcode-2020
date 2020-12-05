@@ -8,13 +8,9 @@ import (
 
 
 func Day5_1(filename string) int {
-	maxSeatId := 0
-	for _, seatId := range parsePlaneSeats(filename) {
-		if seatId > maxSeatId {
-			maxSeatId = seatId
-		}
-	}
-	return maxSeatId
+	seatIds := parsePlaneSeats(filename)
+	sort.Ints(seatIds)
+	return seatIds[len(seatIds)-1]
 }
 
 func Day5_2(filename string) int {
