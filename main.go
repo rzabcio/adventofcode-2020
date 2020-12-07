@@ -17,6 +17,7 @@ func main() {
 		"day4_1": Day4_1, "day4_2": Day4_2,
 		"day5_1": Day5_1, "day5_2": Day5_2,
 		"day6_1": Day6_1, "day6_2": Day6_2,
+		"day7_1": Day7_1, "day7_2": Day7_2,
 	}
 
 	var day = &cobra.Command{
@@ -60,7 +61,6 @@ func inputCh(filename string) (ch chan string) {
 			close(ch)
 			return
 		}
-
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			ch <- scanner.Text()
