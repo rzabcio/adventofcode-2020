@@ -18,6 +18,7 @@ func main() {
 		"day5_1": Day5_1, "day5_2": Day5_2,
 		"day6_1": Day6_1, "day6_2": Day6_2,
 		"day7_1": Day7_1, "day7_2": Day7_2,
+		"day8_1": Day8_1, "day8_2": Day8_2,
 	}
 
 	var day = &cobra.Command{
@@ -82,3 +83,11 @@ func inputChInt(filename string) (ch chan int) {
 	return ch
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
