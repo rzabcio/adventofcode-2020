@@ -9,17 +9,20 @@ import (
 
 
 func Day8_1(filename string) int {
+	fmt.Printf("")
 	c := NewComputer(filename)
 	c.Run()
 	return c.Acc
 }
 
 func Day8_2(filename string) int {
-	acc := 0
-	return acc
+	c := NewComputer(filename)
+	c.RunSelfRepair()
+	return c.Acc
 }
 
 type computer struct {
+	origProgram []computerCommand
 	Program []computerCommand
 	currPos int
 	nextPos int
@@ -30,10 +33,6 @@ type computer struct {
 func NewComputer(programFile string) computer {
 	c := new(computer)
 	c.Program = make([]computerCommand, 0)
-	c.currPos = 0
-	c.nextPos = 0
-	c.Acc = 0
-	c.State = ""
 
 	reg_line := regexp.MustCompile(`^(.*) (.\d*)`)
 	for line := range inputCh(programFile) {
@@ -47,15 +46,27 @@ func NewComputer(programFile string) computer {
 		}
 		c.Program = append(c.Program, *command)
 	}
+	c.origProgram = make([]computerCommand, len(c.Program))
+	copy(c.origProgram, c.Program)
+	c.Reset()
 	return *c
 }
 
-func (c* computer) Run() {
+func (c* computer) Reset() {
+	copy(c.Program, c.origProgram)
+	c.currPos = 0
+	c.nextPos = 0
+	c.Acc = 0
+	c.State = ""
+}
+
+func (c* computer) Run() bool {
 	//fmt.Println("=== BEGIN ===")
 	for c.runNextCommand() {
 		//fmt.Printf("c.Program[%d].count: %d\n", c.currPos, c.Program[c.currPos].count)
 	}
-	fmt.Printf("=== %s ===\n", c.State)
+	//fmt.Printf("=== %s ===\n", c.State)
+	return strings.Index(c.State, "OK") > -1
 }
 
 func (c* computer) runNextCommand() bool {
@@ -83,6 +94,25 @@ func (c* computer) runNextCommand() bool {
 	}
 	command.count++
 	return true 
+}
+
+func (c* computer) RunSelfRepair() bool {
+	for commandPos, command := range c.origProgram {
+		c.Reset()
+		if command.cmd == "jmp" {
+			c.Program[commandPos].cmd = "nop"
+			//fmt.Printf("c.Program[%d]: %s => %s\n", commandPos, c.origProgram[commandPos].cmd, c.Program[commandPos].cmd)
+		} else if command.cmd == "nop" {
+			c.Program[commandPos].cmd = "jmp"
+			//fmt.Printf("c.Program[%d]: %s => %s\n", commandPos, c.origProgram[commandPos].cmd, c.Program[commandPos].cmd)
+		} else {
+			continue
+		}
+		if c.Run() {
+			return true
+		}
+	}
+	return false
 }
 
 type computerCommand struct {

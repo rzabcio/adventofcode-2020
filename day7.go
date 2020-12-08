@@ -9,9 +9,9 @@ import (
 
 
 func Day7_1(filename string) int {
+	fmt.Printf("")
 	bagRules := readBagRules(filename)
 	containers := findContainers(bagRules, []string{"shiny gold"})
-	fmt.Println("containers: ", containers)
 	return len(containers)-1
 }
 
