@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-
 func Day8_1(filename string) int {
 	fmt.Printf("")
 	c := NewComputer(filename)
@@ -23,11 +22,11 @@ func Day8_2(filename string) int {
 
 type computer struct {
 	origProgram []computerCommand
-	Program []computerCommand
-	currPos int
-	nextPos int
-	Acc int
-	State string
+	Program     []computerCommand
+	currPos     int
+	nextPos     int
+	Acc         int
+	State       string
 }
 
 func NewComputer(programFile string) computer {
@@ -40,9 +39,9 @@ func NewComputer(programFile string) computer {
 		command := new(computerCommand)
 		command.cmd = parsed[1]
 		command.args = make([]int, 0)
-		for _, argS := range(strings.Split(parsed[2], ",")) {
+		for _, argS := range strings.Split(parsed[2], ",") {
 			arg, _ := strconv.Atoi(argS)
-			command.args = append(command.args, arg) 
+			command.args = append(command.args, arg)
 		}
 		c.Program = append(c.Program, *command)
 	}
@@ -52,7 +51,7 @@ func NewComputer(programFile string) computer {
 	return *c
 }
 
-func (c* computer) Reset() {
+func (c *computer) Reset() {
 	copy(c.Program, c.origProgram)
 	c.currPos = 0
 	c.nextPos = 0
@@ -60,14 +59,14 @@ func (c* computer) Reset() {
 	c.State = ""
 }
 
-func (c* computer) Run() bool {
+func (c *computer) Run() bool {
 	for c.runNextCommand() {
 	}
-	return strings.Index(c.State, "OK") > -1  //successfull run sets "OK"
+	return strings.Index(c.State, "OK") > -1 //successfull run sets "OK"
 }
 
-func (c* computer) runNextCommand() bool {
-	if c.nextPos == len(c.Program) {  // EOF - successfull
+func (c *computer) runNextCommand() bool {
+	if c.nextPos == len(c.Program) { // EOF - successfull
 		c.State = "OK"
 		return false
 	}
@@ -86,10 +85,10 @@ func (c* computer) runNextCommand() bool {
 		c.nextPos++
 	}
 	command.count++
-	return true 
+	return true
 }
 
-func (c* computer) RunSelfRepair() bool {
+func (c *computer) RunSelfRepair() bool {
 	for commandPos, command := range c.origProgram {
 		c.Reset()
 		if command.cmd == "jmp" {
@@ -107,8 +106,7 @@ func (c* computer) RunSelfRepair() bool {
 }
 
 type computerCommand struct {
-	cmd string
-	args []int
+	cmd   string
+	args  []int
 	count int
 }
-

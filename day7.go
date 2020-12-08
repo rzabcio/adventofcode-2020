@@ -7,12 +7,11 @@ import (
 	"strings"
 )
 
-
 func Day7_1(filename string) int {
 	fmt.Printf("")
 	bagRules := readBagRules(filename)
 	containers := findContainers(bagRules, []string{"shiny gold"})
-	return len(containers)-1
+	return len(containers) - 1
 }
 
 func Day7_2(filename string) int {
@@ -29,13 +28,13 @@ func readBagRules(filename string) map[string][]string {
 		parsed := r_line.FindStringSubmatch(line)
 		container := parsed[1]
 		bagRules[container] = make([]string, 0)
-		for _, bagS := range(strings.Split(strings.ReplaceAll(parsed[2], "no other", "0"), ",")) {
+		for _, bagS := range strings.Split(strings.ReplaceAll(parsed[2], "no other", "0"), ",") {
 			bag := r_bag.FindStringSubmatch(bagS)
 			if len(bag) == 0 {
 				continue
 			}
 			bagCount, _ := strconv.Atoi(bag[1])
-			for i := 0; i<bagCount; i++ { // add entry for every needed luggage (to count it in the future)
+			for i := 0; i < bagCount; i++ { // add entry for every needed luggage (to count it in the future)
 				bagRules[container] = append(bagRules[container], bag[2])
 			}
 		}
@@ -45,7 +44,7 @@ func readBagRules(filename string) map[string][]string {
 
 func findContainers(bagRules map[string][]string, containers []string) []string {
 	// immediate level - all subcontainers
-	for cont, bags := range(bagRules) {
+	for cont, bags := range bagRules {
 		if contains(bags, containers[0]) {
 			containers = append(containers, cont)
 		}
@@ -67,8 +66,8 @@ func calcContainerCost(bagRules map[string][]string, container string) int {
 		return 0
 	}
 	for _, subCont := range bagRules[container] {
-		cost++																				// the cost of this subcontainter
-		cost += calcContainerCost(bagRules, subCont)	// the cost of sub-subcontainers
+		cost++                                       // the cost of this subcontainter
+		cost += calcContainerCost(bagRules, subCont) // the cost of sub-subcontainers
 	}
 	return cost
 }
