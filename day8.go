@@ -61,16 +61,13 @@ func (c* computer) Reset() {
 }
 
 func (c* computer) Run() bool {
-	//fmt.Println("=== BEGIN ===")
 	for c.runNextCommand() {
-		//fmt.Printf("c.Program[%d].count: %d\n", c.currPos, c.Program[c.currPos].count)
 	}
-	//fmt.Printf("=== %s ===\n", c.State)
-	return strings.Index(c.State, "OK") > -1
+	return strings.Index(c.State, "OK") > -1  //successfull run sets "OK"
 }
 
 func (c* computer) runNextCommand() bool {
-	if c.nextPos == len(c.Program) {
+	if c.nextPos == len(c.Program) {  // EOF - successfull
 		c.State = "OK"
 		return false
 	}
@@ -82,12 +79,8 @@ func (c* computer) runNextCommand() bool {
 	c.currPos = c.nextPos
 	if "acc" == command.cmd {
 		c.Acc += command.args[0]
-		//fmt.Printf("   [%d] ACC: %d\n", c.currPos, command.args[0])
 	} else if "jmp" == command.cmd {
 		c.nextPos += command.args[0]
-		//fmt.Printf("   [%d] JMP: %d -> %d\n", c.currPos, command.args[0], c.nextPos)
-	} else  if "nop" == command.cmd {
-		//fmt.Printf("   [%d] NOP\n", c.currPos)
 	}
 	if c.nextPos == c.currPos {
 		c.nextPos++
@@ -101,10 +94,8 @@ func (c* computer) RunSelfRepair() bool {
 		c.Reset()
 		if command.cmd == "jmp" {
 			c.Program[commandPos].cmd = "nop"
-			//fmt.Printf("c.Program[%d]: %s => %s\n", commandPos, c.origProgram[commandPos].cmd, c.Program[commandPos].cmd)
 		} else if command.cmd == "nop" {
 			c.Program[commandPos].cmd = "jmp"
-			//fmt.Printf("c.Program[%d]: %s => %s\n", commandPos, c.origProgram[commandPos].cmd, c.Program[commandPos].cmd)
 		} else {
 			continue
 		}
