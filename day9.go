@@ -19,9 +19,9 @@ func Day9_2(filename string) int {
 }
 
 func findFaultCode(codes []int, preLen int) int {
-	for pos := preLen; pos<len(codes); pos++ {
+	for pos := preLen; pos < len(codes); pos++ {
 		addPos1, _ := findAddends(codes[pos-preLen:pos], codes[pos])
-		if addPos1==-1 {
+		if addPos1 == -1 {
 			return codes[pos]
 		}
 	}
@@ -40,14 +40,14 @@ func findAddends(codes []int, result int) (int, int) {
 }
 
 func findSetOfAddends(codes []int, result int) int {
-	for pos1 := 0; pos1<len(codes); pos1++ {
+	for pos1 := 0; pos1 < len(codes); pos1++ {
 		sum := codes[pos1]
 		min, max := sum, sum
-		for pos2 := pos1+1; pos2<len(codes); pos2++ {
+		for pos2 := pos1 + 1; pos2 < len(codes); pos2++ {
 			sum += codes[pos2]
 			if sum == result {
-				min, max = minMax(codes[pos1:pos2+1])
-				return min+max
+				min, max = minMax(codes[pos1 : pos2+1])
+				return min + max
 			}
 			if sum > result {
 				break
