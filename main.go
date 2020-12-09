@@ -19,6 +19,7 @@ func main() {
 		"day6_1": Day6_1, "day6_2": Day6_2,
 		"day7_1": Day7_1, "day7_2": Day7_2,
 		"day8_1": Day8_1, "day8_2": Day8_2,
+		"day9_1": Day9_1, "day9_2": Day9_2,
 	}
 
 	var day = &cobra.Command{
@@ -90,4 +91,36 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func containsInt(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func indexOfInt(s []int, e int) int {
+	for i, a := range s {
+		if a == e {
+			return i
+		}
+	}
+	return -1
+}
+
+func minMax(array []int) (int, int) {
+	var max int = array[0]
+	var min int = array[0]
+	for _, value := range array {
+		if max < value {
+			max = value
+		}
+		if min > value {
+			min = value
+		}
+	}
+	return min, max
 }
