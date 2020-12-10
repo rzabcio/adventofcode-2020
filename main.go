@@ -8,7 +8,6 @@ import (
 	"strconv"
 )
 
-
 func main() {
 	m := map[string]func(string) int{
 		"day1_1": Day1_1, "day1_2": Day1_2,
@@ -20,10 +19,11 @@ func main() {
 		"day7_1": Day7_1, "day7_2": Day7_2,
 		"day8_1": Day8_1, "day8_2": Day8_2,
 		"day9_1": Day9_1, "day9_2": Day9_2,
+		"day10_1": Day10_1, "day10_2": Day10_2,
 	}
 
 	var day = &cobra.Command{
-		Use:	"day [day_no] [test_no] [filename]",
+		Use:  "day [day_no] [test_no] [filename]",
 		Args: cobra.MinimumNArgs(3),
 		Run: func(cmd *cobra.Command, args []string) {
 			f := m["day"+args[0]+"_"+args[1]]
@@ -35,7 +35,6 @@ func main() {
 	rootCmd.AddCommand(day)
 	rootCmd.Execute()
 }
-
 
 // TOOLS //////////////////////////////////////////////////////////////////////
 func inputSl(filename string) []string {
