@@ -67,11 +67,11 @@ func countAdapterConnections(adapters []int) int {
 		fmt.Printf("--- i=%d: %d\n", i, adapters)
 		if i+2 < len(adapters) && adapters[i+2]-prev == 3 {
 			count *= 4 - 1
-			fmt.Printf("    2. can reduce %d and %d from prev: %s and %d\n", adapters[i], adapters[i+1], adapters[i+1], prev, adapters[i:])
+			fmt.Printf("    2. can reduce %d and %d from prev: %d and %d\n", adapters[i], adapters[i+1], prev, adapters[i:])
 			i += 2
 		} else if i+1 < len(adapters) && adapters[i+1]-prev <= 3 {
 			count *= 2
-			fmt.Printf("    2. can reduce %d from prev: %s and %d\n", adapters[i], prev, adapters[i:])
+			fmt.Printf("    2. can reduce %d from prev: %d and %d\n", adapters[i], prev, adapters[i:])
 			i += 1
 		} else {
 			i += 1
