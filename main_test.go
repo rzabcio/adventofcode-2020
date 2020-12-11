@@ -118,6 +118,15 @@ func TestDay10(t *testing.T) {
 	}
 	got, want = Day10_1("input-files/day10-adapters-test2.txt"), 220
 	if got != want {
+		t.Errorf("Day10_1(test2) = %d; want %d", got, want)
+	}
+
+	got, want = Day10_2("input-files/day10-adapters-test1.txt"), 8
+	if got != want {
 		t.Errorf("Day10_2(test1) = %d; want %d", got, want)
+	}
+	got, want = Day10_2("input-files/day10-adapters-test2.txt"), 19208
+	if got != want {
+		t.Errorf("Day10_2(test2) = %d; want %d", got, want)
 	}
 }
