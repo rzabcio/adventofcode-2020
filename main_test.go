@@ -130,3 +130,19 @@ func TestDay10(t *testing.T) {
 	//	t.Errorf("Day10_2(test2) = %d; want %d", got, want)
 	//}
 }
+
+func TestDay11(t *testing.T) {
+	got, want := Day11_1("input-files/day11-seats-test1.txt"), 37
+	if got != want {
+		t.Errorf("Day11_1(test1) = %d; want %d", got, want)
+	}
+
+	//got, want = Day11_2("input-files/day11-adapters-test1.txt"), 8
+	//if got != want {
+	//	t.Errorf("Day11_2(test1) = %d; want %d", got, want)
+	//}
+	//got, want = Day11_2("input-files/day11-adapters-test2.txt"), 19208
+	//if got != want {
+	//	t.Errorf("Day11_2(test2) = %d; want %d", got, want)
+	//}
+}
