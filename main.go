@@ -21,6 +21,7 @@ func main() {
 		"day9_1": Day9_1, "day9_2": Day9_2,
 		"day10_1": Day10_1, "day10_2": Day10_2,
 		"day11_1": Day11_1, "day11_2": Day11_2,
+		"day12_1": Day12_1, "day12_2": Day12_2,
 	}
 
 	var day = &cobra.Command{
@@ -109,6 +110,13 @@ func indexOfInt(s []int, e int) int {
 		}
 	}
 	return -1
+}
+
+func AbsInt(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
 
 func minMax(array []int) (int, int) {

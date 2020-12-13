@@ -120,15 +120,6 @@ func TestDay10(t *testing.T) {
 	if got != want {
 		t.Errorf("Day10_1(test2) = %d; want %d", got, want)
 	}
-
-	//got, want = Day10_2("input-files/day10-adapters-test1.txt"), 8
-	//if got != want {
-	//	t.Errorf("Day10_2(test1) = %d; want %d", got, want)
-	//}
-	//got, want = Day10_2("input-files/day10-adapters-test2.txt"), 19208
-	//if got != want {
-	//	t.Errorf("Day10_2(test2) = %d; want %d", got, want)
-	//}
 }
 
 func TestDay11(t *testing.T) {
@@ -140,5 +131,17 @@ func TestDay11(t *testing.T) {
 	got, want = Day11_2("input-files/day11-seats-test1.txt"), 26
 	if got != want {
 		t.Errorf("Day11_2(test1) = %d; want %d", got, want)
+	}
+}
+
+func TestDay12(t *testing.T) {
+	got, want := Day12_1("input-files/day12-navigations-test.txt"), 25
+	if got != want {
+		t.Errorf("Day12_1(test1) = %d; want %d", got, want)
+	}
+
+	got, want = Day12_2("input-files/day12-navigations-test.txt"), 286
+	if got != want {
+		t.Errorf("Day12_2(test1) = %d; want %d", got, want)
 	}
 }
