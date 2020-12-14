@@ -23,6 +23,7 @@ func main() {
 		"day11_1": Day11_1, "day11_2": Day11_2,
 		"day12_1": Day12_1, "day12_2": Day12_2,
 		"day13_1": Day13_1, "day13_2": Day13_2,
+		"day14_1": Day14_1, "day14_2": Day14_2,
 	}
 
 	var day = &cobra.Command{
