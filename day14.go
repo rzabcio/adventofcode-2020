@@ -16,7 +16,7 @@ func Day14_1(filename string) int {
 func Day14_2(filename string) int {
 	fmt.Printf("")
 	comp := NewDockingComputer(filename)
-	fmt.Printf("comp: %s\n", comp)
+	fmt.Println("comp: ", comp)
 	return 0
 }
 
@@ -68,7 +68,7 @@ func (this *DockingComputer) PrintMem() string {
 	str := ""
 	for _, memVal := range this.mem {
 		if memVal != 0 {
-			str += string(memVal) + ", "
+			str += fmt.Sprintf("%d, ", memVal)
 		}
 	}
 	return str
