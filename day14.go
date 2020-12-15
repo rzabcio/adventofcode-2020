@@ -9,14 +9,14 @@ import (
 func Day14_1(filename string) int {
 	fmt.Printf("")
 	comp := NewDockingComputer(filename)
-	comp.Run()
+	comp.Run(comp.RunProgramNormal)
 	return int(comp.SumMem())
 }
 
 func Day14_2(filename string) int {
 	fmt.Printf("")
 	comp := NewDockingComputer(filename)
-	fmt.Printf("comp: %s\n", comp)
+	fmt.Println("comp: ", comp)
 	return 0
 }
 
@@ -50,10 +50,16 @@ func NewDockingComputer(filename string) DockingComputer {
 	return *comp
 }
 
-func (this *DockingComputer) Run() {
+type RunFunc func(prog *DockingProgram, mem *[100000]int)
+
+func (this *DockingComputer) Run(runFunction RunFunc) {
 	for _, prog := range this.programs {
-		prog.Run(&this.mem)
+		runFunction(&prog, &this.mem)
 	}
+}
+
+func (this *DockingComputer) RunProgramNormal(prog *DockingProgram, mem *[100000]int) {
+	prog.RunNormalMode(&this.mem)
 }
 
 func (this *DockingComputer) SumMem() int {
@@ -68,7 +74,7 @@ func (this *DockingComputer) PrintMem() string {
 	str := ""
 	for _, memVal := range this.mem {
 		if memVal != 0 {
-			str += string(memVal) + ", "
+			str += fmt.Sprintf("%d, ", memVal)
 		}
 	}
 	return str
@@ -87,6 +93,8 @@ type DockingCommand struct {
 	val int
 }
 
+
+
 func (this *DockingProgram) parseMask() {
 	this.maskVals = make([]int, 0)
 	this.maskType = make([]bool, 0)
@@ -100,7 +108,7 @@ func (this *DockingProgram) parseMask() {
 	}
 }
 
-func (this *DockingProgram) Run(mem *[100000]int) {
+func (this *DockingProgram) RunNormalMode(mem *[100000]int) {
 	for _, cmd := range this.commands {
 		newVal := cmd.val
 		for i, maskVal := range this.maskVals {
