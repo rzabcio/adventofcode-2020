@@ -28,10 +28,8 @@ type DockingComputer struct {
 }
 
 func NewDockingComputer(filename string) DockingComputer {
-	fmt.Println("creating computer...")
 	comp := new(DockingComputer)
 	comp.mem = make(map[int]int)
-	fmt.Println("computer created")
 	comp.programs = make([]DockingProgram, 0)
 	prog := new(DockingProgram)
 	for fline := range inputCh(filename) {
@@ -170,6 +168,6 @@ func (this *DockingProgram) RunMemoryMode(mem *map[int]int) {
 			(*mem)[ind] = cmd.val
 		}
 		//fmt.Printf(" added %d, total %d -- %d\n", len(inds), len(*mem), *mem)
-		fmt.Printf(" added %d, total %d\n", len(inds), len(*mem))
+		//fmt.Printf(" added %d, total %d\n", len(inds), len(*mem))
 	}
 }
