@@ -6,37 +6,40 @@ import (
 	"strings"
 )
 
+const MEM_SIZE = 100000000
+
 func Day14_1(filename string) int {
 	fmt.Printf("")
 	comp := NewDockingComputer(filename)
-	comp.Run()
+	comp.Run(comp.RunNormalProgram)
 	return int(comp.SumMem())
 }
 
 func Day14_2(filename string) int {
 	fmt.Printf("")
 	comp := NewDockingComputer(filename)
-	fmt.Println("comp: ", comp)
-	return 0
+	comp.Run(comp.RunMemoryProgram)
+	return int(comp.SumMem())
 }
 
 type DockingComputer struct {
 	programs []DockingProgram
-	mem      [100000]int
+	mem      map[int]int
 }
 
 func NewDockingComputer(filename string) DockingComputer {
 	comp := new(DockingComputer)
+	comp.mem = make(map[int]int)
 	comp.programs = make([]DockingProgram, 0)
 	prog := new(DockingProgram)
 	for fline := range inputCh(filename) {
 		cmdArg := strings.Split(fline, " = ")
 		if cmdArg[0] == "mask" {
-			if len(prog.mask) > 0 {
+			if len(prog.maskString) > 0 {
 				comp.programs = append(comp.programs, *prog)
 			}
 			prog = new(DockingProgram)
-			prog.mask = cmdArg[1]
+			prog.maskString = cmdArg[1]
 			prog.parseMask()
 		} else {
 			cmd := new(DockingCommand)
@@ -50,10 +53,20 @@ func NewDockingComputer(filename string) DockingComputer {
 	return *comp
 }
 
-func (this *DockingComputer) Run() {
+type RunFunc func(prog *DockingProgram, mem *map[int]int)
+
+func (this *DockingComputer) Run(runFunction RunFunc) {
 	for _, prog := range this.programs {
-		prog.Run(&this.mem)
+		runFunction(&prog, &this.mem)
 	}
+}
+
+func (this *DockingComputer) RunNormalProgram(prog *DockingProgram, mem *map[int]int) {
+	prog.RunNormalMode(&this.mem)
+}
+
+func (this *DockingComputer) RunMemoryProgram(prog *DockingProgram, mem *map[int]int) {
+	prog.RunMemoryMode(&this.mem)
 }
 
 func (this *DockingComputer) SumMem() int {
@@ -76,10 +89,14 @@ func (this *DockingComputer) PrintMem() string {
 }
 
 type DockingProgram struct {
-	mask     string
-	maskVals []int
-	maskType []bool
-	commands []DockingCommand
+	maskString string
+	masks      []DockingMask
+	commands   []DockingCommand
+}
+
+type DockingMask struct {
+	val int
+	typ int
 }
 
 type DockingCommand struct {
@@ -88,30 +105,69 @@ type DockingCommand struct {
 }
 
 func (this *DockingProgram) parseMask() {
-	this.maskVals = make([]int, 0)
-	this.maskType = make([]bool, 0)
+	this.masks = make([]DockingMask, 0)
 	pow2 := 1
-	for i := len(this.mask) - 1; i >= 0; i-- {
-		if "X" != string(this.mask[i]) {
-			this.maskVals = append(this.maskVals, int(pow2))
-			this.maskType = append(this.maskType, "1" == string(this.mask[i]))
+	for i := len(this.maskString) - 1; i >= 0; i-- {
+		mask := new(DockingMask)
+		mask.val = int(pow2)
+		if "X" != string(this.maskString[i]) {
+			mask.typ, _ = strconv.Atoi(string(this.maskString[i]))
+		} else {
+			mask.typ = -1
 		}
+		this.masks = append(this.masks, *mask)
 		pow2 *= 2
 	}
 }
 
-func (this *DockingProgram) Run(mem *[100000]int) {
+func (this *DockingProgram) RunNormalMode(mem *map[int]int) {
 	for _, cmd := range this.commands {
 		newVal := cmd.val
-		for i, maskVal := range this.maskVals {
-			byteEnabled := newVal&maskVal > 0
-			if this.maskType[i] && !byteEnabled {
-				newVal += maskVal
-			} else if !this.maskType[i] && byteEnabled {
-				newVal -= maskVal
+		for _, mask := range this.masks {
+			byteEnabled := newVal&mask.val > 0
+			if mask.typ == 1 && !byteEnabled {
+				newVal += mask.val
+			} else if mask.typ == 0 && byteEnabled {
+				newVal -= mask.val
 			}
 		}
-		//fmt.Printf("setting mem[%d] := %d -> %d\n", cmd.ind, cmd.val, newVal)
+		//fmt.Printf("--- setting mem[%d] := %d -> %d\n", cmd.ind, cmd.val, newVal)
 		(*mem)[cmd.ind] = newVal
+	}
+}
+
+func (this *DockingProgram) RunMemoryMode(mem *map[int]int) {
+	for _, cmd := range this.commands {
+		inds := make([]int, 0)
+		ind := cmd.ind
+		for _, mask := range this.masks {
+			byteEnabled := ind&mask.val > 0
+			if mask.typ == 1 && !byteEnabled {
+				ind += mask.val
+			}
+		}
+		inds = append(inds, ind)
+		//fmt.Printf("    + %d\n", ind)
+		for _, mask := range this.masks {
+			for _, ind := range inds {
+				if mask.typ >= 0 || mask.val > ind {
+					break
+				}
+				byteEnabled := ind&mask.val > 0
+				if mask.typ == -1 && !byteEnabled {
+					inds = append(inds, ind+mask.val)
+					//fmt.Printf("    + %d\n", ind+mask.val)
+				} else if mask.typ == -1 && byteEnabled {
+					inds = append(inds, ind-mask.val)
+					//fmt.Printf("    + %d\n", ind-mask.val)
+				}
+			}
+		}
+		//fmt.Printf("setting cmd.ind: %d => %s => mem[%d] := %d\n", cmd.ind, this.maskString, inds, cmd.val)
+		for _, ind := range inds {
+			(*mem)[ind] = cmd.val
+		}
+		//fmt.Printf(" added %d, total %d -- %d\n", len(inds), len(*mem), *mem)
+		//fmt.Printf(" added %d, total %d\n", len(inds), len(*mem))
 	}
 }
