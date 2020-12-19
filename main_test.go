@@ -188,7 +188,7 @@ func TestDay15(t *testing.T) {
 }
 
 func TestDay16(t *testing.T) {
-	got, want := Day16_1("input-files/day16-tickets-test1.txt"), 436
+	got, want := Day16_1("input-files/day16-tickets-test1.txt"), 71
 	if got != want {
 		t.Errorf("Day16_1(test1) = %d; want %d", got, want)
 	}
