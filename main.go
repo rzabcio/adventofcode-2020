@@ -89,22 +89,37 @@ func inputChInt(filename string) (ch chan int) {
 	return ch
 }
 
+func remove(s []string, e string) []string {
+	i := indexOf(s, e)
+	if i < 0 {
+		return s
+	}
+	res := make([]string, 0)
+	if i == 0 {
+		res = s[i+1:]
+	} else if i == len(s)-1 {
+		res = s[:i]
+	} else {
+		res = append(s[:i], s[i+1:]...)
+	}
+	return res
+}
+
 func contains(s []string, e string) bool {
-	for _, a := range s {
+	return indexOf(s, e) >= 0
+}
+
+func indexOf(s []string, e string) int {
+	for i, a := range s {
 		if a == e {
-			return true
+			return i
 		}
 	}
-	return false
+	return -1
 }
 
 func containsInt(s []int, e int) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+	return indexOfInt(s, e) >= 0
 }
 
 func indexOfInt(s []int, e int) int {

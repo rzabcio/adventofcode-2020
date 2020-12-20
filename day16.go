@@ -16,11 +16,11 @@ func Day16_1(filename string) int {
 func Day16_2(filename string) int {
 	tc := NewTicketComputer(filename)
 	tc.ValidateTickets()
-	tc.FieldNames()
-	return 0
+	return tc.MyTicketValues("departure")
 }
 
 type TicketComputer struct {
+	fieldNames   []string
 	validators   []TicketFieldValidator
 	myTicket     Ticket
 	nearTickets  []Ticket
@@ -79,23 +79,68 @@ func (this *TicketComputer) ValidateTickets() int {
 	return errRateSum
 }
 
+func (this *TicketComputer) AllFieldNames() []string {
+	fieldNames := make([]string, 0)
+	for _, validator := range this.validators {
+		fieldNames = append(fieldNames, validator.name)
+	}
+	return fieldNames
+}
+
 func (this *TicketComputer) FieldNames() []string {
-	names := make([]string, 0)
-	for i, _ := range this.validTickets[0].fields {
-		//for _, ticket := range this.validTickets {
-		for _, ticket := range this.nearTickets {
-			fmt.Printf(" %d, ", len(ticket.fields[i].possNames))
-			if len(ticket.fields[i].possNames) == 1 {
-				names = append(names, ticket.fields[i].possNames[0])
+	allFieldNames := this.AllFieldNames()
+	fieldNames := make([][]string, len(allFieldNames))
+	// defining possible names by removing impossible names
+	for i, _ := range allFieldNames {
+		fieldNames[i] = make([]string, len(allFieldNames))
+		copy(fieldNames[i], allFieldNames)
+		for _, ticket := range this.validTickets {
+			for _, impName := range ticket.fields[i].impNames {
+				fieldNames[i] = remove(fieldNames[i], impName)
 			}
 		}
-		fmt.Printf("\n")
-		if len(names) < i+1 {
-			names = append(names, "?")
+	}
+
+	//reducing possible names by names occuring only once
+	removed := make([]string, 0)
+	for true {
+		wasChange := false
+		for i, names := range fieldNames {
+			if len(names) == 1 && !contains(removed, names[0]) {
+				for j, _ := range fieldNames {
+					if i == j {
+						continue
+					}
+					fieldNames[j] = remove(fieldNames[j], names[0])
+				}
+				removed = append(removed, names[0])
+				wasChange = true
+			}
+		}
+		if !wasChange {
+			break
 		}
 	}
-	fmt.Printf("%s\n", names)
-	return names
+
+	//defining final field names
+	this.fieldNames = make([]string, 0)
+	for _, names := range fieldNames {
+		this.fieldNames = append(this.fieldNames, names[0])
+	}
+	return this.fieldNames
+}
+
+func (this *TicketComputer) MyTicketValues(field string) int {
+	if len(this.fieldNames) == 0 {
+		this.FieldNames()
+	}
+	valsMul := 1
+	for i, fieldName := range this.fieldNames {
+		if strings.Contains(fieldName, field) {
+			valsMul *= this.myTicket.fields[i].no
+		}
+	}
+	return valsMul
 }
 
 type Ticket struct {
@@ -104,10 +149,9 @@ type Ticket struct {
 }
 
 type TicketField struct {
-	possNames []string
-	name      string
-	no        int
-	validated bool
+	impNames []string
+	no       int
+	valid    bool
 }
 
 func NewTicket() Ticket {
@@ -120,18 +164,18 @@ func NewTicket() Ticket {
 func (this *Ticket) AddField(no int) {
 	field := new(TicketField)
 	field.no = no
-	field.possNames = make([]string, 0)
+	field.valid = false
 	this.fields = append(this.fields, *field)
 }
 
 func (this *Ticket) IsValid() bool {
-	return len(FilterTicketFields(this.fields, func(field TicketField) bool { return !field.validated })) == 0
+	return len(FilterTicketFields(this.fields, func(field TicketField) bool { return !field.valid })) == 0
 }
 
 func (this *Ticket) ErrRate() int {
 	errRate := 0
 	for _, field := range this.fields {
-		if !field.validated {
+		if !field.valid {
 			errRate += field.no
 		}
 	}
@@ -144,19 +188,14 @@ type TicketFieldValidator struct {
 	max  []int
 }
 
-func (this *TicketFieldValidator) ValidateTicket(ticket *Ticket) bool {
-	valid := false
+func (this *TicketFieldValidator) ValidateTicket(ticket *Ticket) {
 	for i, field := range ticket.fields {
-		if this.validateField(field) && len(field.name) == 0 {
-			//ticket.fields[i].name = this.name
-			ticket.fields[i].possNames = append(ticket.fields[i].possNames, this.name)
-			ticket.fields[i].validated = true
-			continue
+		if this.validateField(field) {
+			ticket.fields[i].valid = true
 		} else {
-			valid = valid || true
+			ticket.fields[i].impNames = append(ticket.fields[i].impNames, this.name)
 		}
 	}
-	return valid
 }
 
 func (this *TicketFieldValidator) validateField(field TicketField) bool {
