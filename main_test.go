@@ -198,3 +198,15 @@ func TestDay16(t *testing.T) {
 		t.Errorf("Day16_2(test1) = %d; want %d", got, want)
 	}
 }
+
+func TestDay17(t *testing.T) {
+	got, want := Day17_1("input-files/day17-cubespace-test.txt"), 112
+	if got != want {
+		t.Errorf("Day17_1(test1) = %d; want %d", got, want)
+	}
+
+	got, want = Day17_2("input-files/day17-cubespace-test.txt"), 453459307723
+	if got != want {
+		t.Errorf("Day17_2(test1) = %d; want %d", got, want)
+	}
+}
