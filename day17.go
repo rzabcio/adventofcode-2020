@@ -7,19 +7,22 @@ import (
 func Day17_1(filename string) int {
 	fmt.Printf("")
 	space := NewCubeSpaceFromFile(filename)
-	space.NextGen()
-	space.NextGen()
-	space.NextGen()
-	space.NextGen()
-	space.NextGen()
-	space.NextGen()
+	fmt.Printf("====== generation: 0, active count: %d =====\n%s\n", space.ActiveCount, space.Print())
+	for i := 1; i <= 6; i++ {
+		space.NextGen3d()
+		fmt.Printf("====== generation: %d, active count: %d =====\n%s\n", i, space.ActiveCount, space.Print())
+	}
 	return space.ActiveCount
 }
 
 func Day17_2(filename string) int {
 	space := NewCubeSpaceFromFile(filename)
-	fmt.Println("space: ", space)
-	return 0
+	fmt.Printf("====== generation: 0, active count: %d =====\n%s\n", space.ActiveCount, space.Print())
+	for i := 1; i <= 6; i++ {
+		space.NextGen4d()
+		fmt.Printf("====== generation: %d, active count: %d =====\n%s\n", i, space.ActiveCount, space.Print())
+	}
+	return space.ActiveCount
 }
 
 type CubeSpace struct {
@@ -127,7 +130,28 @@ func (space *CubeSpace) GetNeigh(xs, ys, zs, ws int) CubeSpace {
 	return neigh
 }
 
-func (space *CubeSpace) NextGen() {
+func (space *CubeSpace) NextGen3d() {
+	newSpace := NewCubeSpace()
+	w := 0
+	for z := space.z_min - 1; z <= space.z_max+1; z++ {
+		for y := space.y_min - 1; y <= space.y_max+1; y++ {
+			for x := space.x_min - 1; x <= space.x_max+1; x++ {
+				cube := space.Get(x, y, z, w)
+				neigh := space.GetNeigh(x, y, z, w)
+				if cube.st == "#" && (neigh.ActiveCount-1 < 2 || neigh.ActiveCount-1 > 3) {
+					newSpace.Set(x, y, z, w, ".")
+				} else if cube.st == "." && neigh.ActiveCount == 3 {
+					newSpace.Set(x, y, z, w, "#")
+				} else {
+					newSpace.Set(x, y, z, w, cube.st)
+				}
+			}
+		}
+	}
+	*space = newSpace
+}
+
+func (space *CubeSpace) NextGen4d() {
 	newSpace := NewCubeSpace()
 	for w := space.w_min - 1; w <= space.w_max+1; w++ {
 		for z := space.z_min - 1; z <= space.z_max+1; z++ {
