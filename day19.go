@@ -17,8 +17,20 @@ func Day19_1(filename string) int {
 }
 
 func Day19_2(filename string) int {
-	calc := NewMsgValidator(filename)
-	return calc.CountRule0()
+	mv := NewMsgValidator(filename)
+	newRuleStrings := []string{
+		"8: 42 | 42 42 | 42 42 42 | 42 42 42 42 | 42 42 42 42 42",
+		"11: 42 31 | 42 42 31 31 | 42 42 42 31 31 31 | 42 42 42 42 31 31 31 31 | 42 42 42 42 42 31 31 31 31 31",
+	}
+	for _, newRuleString := range newRuleStrings {
+		newRule := NewMsgRule(newRuleString)
+		mv.rules[newRule.id] = newRule
+		//fmt.Printf("setting rule: %s\n", newRule.Print())
+	}
+	for mv.ParseRules() {
+		//fmt.Println("", mv.Print())
+	}
+	return mv.CountRule0()
 }
 
 type MsgValidator struct {
@@ -31,7 +43,7 @@ func NewMsgValidator(filename string) MsgValidator {
 	ch := inputCh(filename)
 
 	// parsing rules
-	mv.rules = make([]MsgRule, 134)
+	mv.rules = make([]MsgRule, 136)
 	for line := range ch {
 		if len(line) == 0 {
 			break
@@ -102,11 +114,11 @@ func (mv *MsgValidator) CountRule0() int {
 
 func (mv *MsgValidator) Print() string {
 	s := "rules:\n"
-	for i, rule := range mv.rules {
+	for _, rule := range mv.rules {
 		if len(rule.s) == 0 {
 			continue
 		}
-		s += fmt.Sprintf("   [%d] - %s\n", i, rule.Print())
+		s += fmt.Sprintf("   %s\n", rule.Print())
 	}
 	return s
 }
@@ -159,7 +171,12 @@ func (rule *MsgRule) SubRules() []int {
 }
 
 func (rule *MsgRule) Print() string {
-	s := ""
+	s := fmt.Sprintf("[%2d]", rule.id)
+	if rule.Parsed {
+		s += "* "
+	} else {
+		s += "  "
+	}
 	s += rule.orig
 	if rule.Parsed {
 		s += " => " + rule.s
