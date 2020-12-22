@@ -16,3 +16,7 @@
 
 # ctags
 tags
+
+# Repl.it
+go.mod
+go.sum
