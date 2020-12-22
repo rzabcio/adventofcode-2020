@@ -9,27 +9,27 @@ import (
 
 func Day19_1(filename string) int {
 	fmt.Printf("")
-	mv := NewMessValidator(filename)
+	mv := NewMsgValidator(filename)
 	test()
 	return mv.CountRule0()
 }
 
 func Day19_2(filename string) int {
-	calc := NewMessValidator(filename)
+	calc := NewMsgValidator(filename)
 	return calc.CountRule0()
 }
 
-type MessValidator struct {
-	rules []MessRule
+type MsgValidator struct {
+	rules []MsgRule
 	msgs  []string
 }
 
-func NewMessValidator(filename string) MessValidator {
-	mv := new(MessValidator)
+func NewMsgValidator(filename string) MsgValidator {
+	mv := new(MsgValidator)
 	ch := inputCh(filename)
 
 	// parsing rules
-	mv.rules = make([]MessRule, 133)
+	mv.rules = make([]MsgRule, 133)
 	r_rule := regexp.MustCompile(`^(\d*): (.*)$`)
 	for line := range ch {
 		if len(line) == 0 {
@@ -37,7 +37,7 @@ func NewMessValidator(filename string) MessValidator {
 		}
 		parsed := r_rule.FindStringSubmatch(line)
 		i, _ := strconv.Atoi(parsed[1])
-		rule := NewMessRule(parsed[2])
+		rule := NewMsgRule(parsed[2])
 		mv.rules[i] = rule
 	}
 
@@ -50,19 +50,27 @@ func NewMessValidator(filename string) MessValidator {
 	return *mv
 }
 
-func (mv *MessValidator) CountRule0() int {
+func (mv *MsgValidator) ParseRules() {
+
+}
+
+func (mv MsgValidator) canBeParsed(rule MsgRule) {
+
+}
+
+func (mv *MsgValidator) CountRule0() int {
 	return 0
 }
 
-type MessRule struct {
+type MsgRule struct {
 	orig   string
 	s      string
 	Parsed bool
 	Regexp regexp.Regexp
 }
 
-func NewMessRule(s string) MessRule {
-	rule := new(MessRule)
+func NewMsgRule(s string) MsgRule {
+	rule := new(MsgRule)
 	rule.Parsed = false
 	rule.orig = s
 	rule.s = s
@@ -70,7 +78,7 @@ func NewMessRule(s string) MessRule {
 	return *rule
 }
 
-func (rule *MessRule) Parse() bool {
+func (rule *MsgRule) Parse() bool {
 	if strings.Contains(rule.s, "| ") {
 		return false
 	}
