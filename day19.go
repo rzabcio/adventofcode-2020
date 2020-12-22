@@ -10,7 +10,9 @@ import (
 func Day19_1(filename string) int {
 	fmt.Printf("")
 	mv := NewMsgValidator(filename)
-	test()
+	for mv.ParseRules() {
+		//fmt.Println("", mv.Print())
+	}
 	return mv.CountRule0()
 }
 
@@ -29,7 +31,7 @@ func NewMsgValidator(filename string) MsgValidator {
 	ch := inputCh(filename)
 
 	// parsing rules
-	mv.rules = make([]MsgRule, 133)
+	mv.rules = make([]MsgRule, 134)
 	r_rule := regexp.MustCompile(`^(\d*): (.*)$`)
 	for line := range ch {
 		if len(line) == 0 {
@@ -50,16 +52,66 @@ func NewMsgValidator(filename string) MsgValidator {
 	return *mv
 }
 
-func (mv *MsgValidator) ParseRules() {
+func (mv *MsgValidator) ParseRules() bool {
+	wasChange := false
+	for i := 0; i < len(mv.rules); i++ {
+		if len(mv.rules[i].orig) == 0 {
+			continue
+		}
+		if mv.rules[i].Parsed {
+			//fmt.Printf("[%d] already parsed: %s\n", i, mv.rules[i].Print())
+			continue
+		}
+		if !mv.canBeParsed(mv.rules[i]) {
+			//fmt.Printf("[%d] can't be parsed: %s\n", i, mv.rules[i].Print())
+			continue
+		}
+		//fmt.Printf("[%d] will be parsed: %s\n", i, mv.rules[i].Print())
 
+		mv.rules[i].s = mv.replaceIdsWithRules(mv.rules[i].s)
+		mv.rules[i].Parse()
+		wasChange = true
+	}
+	return wasChange
 }
 
-func (mv MsgValidator) canBeParsed(rule MsgRule) {
+func (mv *MsgValidator) canBeParsed(rule MsgRule) bool {
+	for _, id := range rule.SubRules() {
+		if !mv.rules[id].Parsed {
+			return false
+		}
+	}
+	return true
+}
 
+func (mv *MsgValidator) replaceIdsWithRules(s string) string {
+	return r_numbers.ReplaceAllStringFunc(s, mv.replaceIdWithRule)
+}
+
+func (mv *MsgValidator) replaceIdWithRule(s string) string {
+	id, _ := strconv.Atoi(s)
+	return fmt.Sprintf("%s", mv.rules[id].s)
 }
 
 func (mv *MsgValidator) CountRule0() int {
-	return 0
+	count := 0
+	for _, msg := range mv.msgs {
+		if mv.rules[0].Matches(msg) {
+			count++
+		}
+	}
+	return count
+}
+
+func (mv *MsgValidator) Print() string {
+	s := "rules:\n"
+	for i, rule := range mv.rules {
+		if len(rule.s) == 0 {
+			continue
+		}
+		s += fmt.Sprintf("   [%d] - %s\n", i, rule.Print())
+	}
+	return s
 }
 
 type MsgRule struct {
@@ -78,15 +130,45 @@ func NewMsgRule(s string) MsgRule {
 	return *rule
 }
 
+func (rule *MsgRule) Matches(s string) bool {
+	return rule.Regexp.MatchString(s)
+}
+
 func (rule *MsgRule) Parse() bool {
-	if strings.Contains(rule.s, "| ") {
+	if r_numbers.MatchString(rule.s) {
 		return false
 	}
-	rule.s = strings.Trim(rule.s, "\"")
+	if strings.Contains(rule.s, "| ") {
+		rule.s = "(" + strings.ReplaceAll(rule.s, " | ", "|") + ")"
+	}
+	rule.s = strings.ReplaceAll(rule.s, "\"", "")
+	rule.s = strings.ReplaceAll(rule.s, " ", "")
 	rule.Regexp = *regexp.MustCompile("^" + rule.s + "$")
 	rule.Parsed = true
 	return true
 }
+
+func (rule *MsgRule) SubRules() []int {
+	subRules := make([]int, 0)
+	parsed := r_numbers.FindAllStringSubmatch(rule.orig, -1)
+	for _, subParsed := range parsed {
+		ruleId, _ := strconv.Atoi(subParsed[0])
+		subRules = append(subRules, ruleId)
+	}
+	return subRules
+}
+
+func (rule *MsgRule) Print() string {
+	s := ""
+	s += rule.orig
+	if rule.Parsed {
+		s += " => " + rule.s
+	}
+	return s
+}
+
+// GLOBAL VARS
+var r_numbers = regexp.MustCompile(`(\d+)`)
 
 // test functions
 func test() {
