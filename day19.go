@@ -32,15 +32,12 @@ func NewMsgValidator(filename string) MsgValidator {
 
 	// parsing rules
 	mv.rules = make([]MsgRule, 134)
-	r_rule := regexp.MustCompile(`^(\d*): (.*)$`)
 	for line := range ch {
 		if len(line) == 0 {
 			break
 		}
-		parsed := r_rule.FindStringSubmatch(line)
-		i, _ := strconv.Atoi(parsed[1])
-		rule := NewMsgRule(parsed[2])
-		mv.rules[i] = rule
+		rule := NewMsgRule(line)
+		mv.rules[rule.id] = rule
 	}
 
 	// parsing messages
@@ -115,6 +112,7 @@ func (mv *MsgValidator) Print() string {
 }
 
 type MsgRule struct {
+	id     int
 	orig   string
 	s      string
 	Parsed bool
@@ -123,9 +121,11 @@ type MsgRule struct {
 
 func NewMsgRule(s string) MsgRule {
 	rule := new(MsgRule)
+	parsed := r_rule.FindStringSubmatch(s)
+	rule.id, _ = strconv.Atoi(parsed[1])
 	rule.Parsed = false
-	rule.orig = s
-	rule.s = s
+	rule.orig = parsed[2]
+	rule.s = parsed[2]
 	rule.Parse()
 	return *rule
 }
@@ -169,6 +169,7 @@ func (rule *MsgRule) Print() string {
 
 // GLOBAL VARS
 var r_numbers = regexp.MustCompile(`(\d+)`)
+var r_rule = regexp.MustCompile(`^(\d*): (.*)$`)
 
 // test functions
 func test() {
