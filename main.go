@@ -30,6 +30,7 @@ func main() {
 		"day18_1": Day18_1, "day18_2": Day18_2,
 		"day19_1": Day19_1, "day19_2": Day19_2,
 		"day20_1": Day20_1, "day20_2": Day20_2,
+		"day21_1": Day21_1, "day21_2": Day21_2,
 	}
 
 	var day = &cobra.Command{
@@ -153,6 +154,42 @@ func ReverseStrArr(ss []string) []string {
 	return ss
 }
 
+func intersection(a []string, b []string) (inter []string) {
+	// interacting on the smallest list first can potentailly be faster...but not by much, worse case is the same
+	low, high := a, b
+	if len(a) > len(b) {
+		low = b
+		high = a
+	}
+
+	done := false
+	for i, l := range low {
+		for j, h := range high {
+			// get future index values
+			f1 := i + 1
+			f2 := j + 1
+			if l == h {
+				inter = append(inter, h)
+				if f1 < len(low) && f2 < len(high) {
+					// if the future values aren't the same then that's the end of the intersection
+					if low[f1] != high[f2] {
+						done = true
+					}
+				}
+				// we don't want to interate on the entire list everytime, so remove the parts we already looped on will make it faster each pass
+				high = high[:j+copy(high[j:], high[j+1:])]
+				break
+			}
+		}
+		// nothing in the future so we are done
+		if done {
+			break
+		}
+	}
+	return
+}
+
+// TOOLS - NUMERICAL
 func AbsInt(x int) int {
 	if x < 0 {
 		return -x
