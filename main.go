@@ -93,6 +93,16 @@ func inputChInt(filename string) (ch chan int) {
 	return ch
 }
 
+// TOOLS - STRING
+func ReverseStr(s string) string {
+	r := ""
+	for i := len(s) - 1; i >= 0; i-- {
+		r += string(s[i])
+	}
+	return r
+}
+
+// TOOLS - ARRAYS
 func remove(s []string, e string) []string {
 	i := indexOf(s, e)
 	if i < 0 {
@@ -133,6 +143,14 @@ func indexOfInt(s []int, e int) int {
 		}
 	}
 	return -1
+}
+
+func ReverseStrArr(ss []string) []string {
+	for i := 0; i < len(ss)/2; i++ {
+		j := len(ss) - i - 1
+		ss[i], ss[j] = ss[j], ss[i]
+	}
+	return ss
 }
 
 func AbsInt(x int) int {
