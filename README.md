@@ -8,10 +8,16 @@ Requirements installation:
 > go get -u github.com/spf13/cobra
 ~~~~
 
-How to run specific puzzle (input files included in /input-files):
+(not working) How to run specific puzzle (input files included in /input-files):
 ~~~~
 > go run day <day:1-25> <part:1/2> <input-file>
 ~~~~
+
+(2021-11) How to run specific puzzle (input files included in /input-files):
+~~~~
+> go run main.go day*.go day <day:1-25> <part:1/2> <input-file>
+~~~~
+
 
 Because of TDD approach, tests are also included:
 ~~~~
